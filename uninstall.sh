@@ -20,3 +20,14 @@ if [ -r "$DATADIR/bloat.list" ]; then
         pm enable "$pkg" >/dev/null 2>&1
     done < "$DATADIR/bloat.list"
 fi
+
+# 3) restore the web panel / samba if the user had toggled them off — otherwise
+#    they'd stay disabled with the controlling CLI gone.
+[ -f "$DATADIR/webui_off" ] && pm enable com.zte.web >/dev/null 2>&1
+[ -f "$DATADIR/samba_off" ] && setprop persist.sys.samba.enable 1 2>/dev/null
+
+# 4) revert vm tunables we raised (also reset on next reboot anyway)
+for p in /proc/sys/vm/vm_swappiness /proc/sys/vm/swappiness; do
+    [ -w "$p" ] && echo 60 > "$p" 2>/dev/null
+done
+[ -w /proc/sys/vm/vfs_cache_pressure ] && echo 100 > /proc/sys/vm/vfs_cache_pressure 2>/dev/null

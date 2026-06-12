@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3.0 — 2026-06-13
+- **Fix inverted `saver` semantics.** `lite-mem saver on` now means RAM-saving
+  ON = kill web panel + samba; `saver off` restores them. (Was backwards.)
+- **uninstall.sh now restores state**: if you had `webui off` / `samba off`, it
+  re-enables `com.zte.web` + `persist.sys.samba.enable=1` (otherwise they'd stay
+  disabled with the CLI gone). Also reverts the vm tunables it raised.
+
+
 ## v1.2.0 — 2026-06-13
 - **Stop the ZTE Samba/SMB share** (`/system/bin/smbd` on :139/:445, toggled in
   the web UI via `persist.sys.samba.enable`). New CLI:

@@ -1,7 +1,7 @@
 {
-    "version": "v1.2.0",
-    "versionCode": 3,
-    "zipUrl": "https://github.com/dikeckaan/magisk-zte-f50-lite-mem/releases/download/v1.2.0/lite-mem-v1.2.0.zip",
-    "sha256": "1a8bab0de8dd4d5318f8bd39deb19100c5c7ba1d0169e9d5886b0990e796654d",
+    "version": "v1.3.0",
+    "versionCode": 4,
+    "zipUrl": "https://github.com/dikeckaan/magisk-zte-f50-lite-mem/releases/download/v1.3.0/lite-mem-v1.3.0.zip",
+    "sha256": "367fedd2531692c474cb118eadf348a07c91e338d128a036078664a81c3ed7c4",
     "changelog": "https://raw.githubusercontent.com/dikeckaan/magisk-zte-f50-lite-mem/main/CHANGELOG.md"
 }

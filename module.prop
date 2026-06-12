@@ -1,7 +1,7 @@
 id=lite-mem
 name=Lite Mem (zram + debloat)
-version=v1.2.0
-versionCode=3
+version=v1.3.0
+versionCode=4
 author=kaandikec
 description=Memory relief for the low-RAM ZTE F50 (~1.4GB). Adds an extra zstd-compressed zram swap, raises vm.swappiness/vfs_cache_pressure, disables background bloat (ZTE analytics/neopush/zdm/aftersale/flagreset), and offers shell/bot-toggleable kills of the ZTE goform web panel (com.zte.web) and the Samba/SMB share (smbd :139/:445) to save RAM + close ports. CLI: `lite-mem status | webui off|on | samba off|on | saver on|off`. Bot: /lite. Frees real RAM so V2rayTun/AdGuard stop getting LMK-killed. Fully reversible. Edit /data/lite-mem/bloat.list to customize.
 updateJson=https://raw.githubusercontent.com/dikeckaan/magisk-zte-f50-lite-mem/main/update.json
