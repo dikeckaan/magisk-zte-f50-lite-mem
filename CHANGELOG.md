@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.2.0 — 2026-06-13
+- **Stop the ZTE Samba/SMB share** (`/system/bin/smbd` on :139/:445, toggled in
+  the web UI via `persist.sys.samba.enable`). New CLI:
+  - `lite-mem samba off` — set the prop 0 + kill smbd/nmbd (frees RAM, closes
+    the SMB ports). Survives reboot; re-asserted on boot.
+  - `lite-mem samba on` — re-enable.
+  - `lite-mem saver on|off` — one-shot RAM-saving mode (web panel + samba together).
+  - `lite-mem status` now shows samba state.
+
+
 ## v1.1.0 — 2026-06-13
 - **Shell-toggleable ZTE web-panel kill.** New `lite-mem` CLI:
   - `lite-mem webui off` — `pm disable` + kill `com.zte.web` (the goform web

@@ -27,9 +27,16 @@ cloud. You can toggle it off to save that RAM:
 ```
 lite-mem webui off     # pm disable + kill com.zte.web (survives reboot)
 lite-mem webui on      # restore it
-lite-mem webui status
-lite-mem status        # overall: swap / swappiness / RAM / web panel
+lite-mem samba off     # stop smbd (:139/:445) + persist.sys.samba.enable=0
+lite-mem samba on      # re-enable
+lite-mem saver on      # one-shot RAM-saving mode: web panel + samba off together
+lite-mem saver off     # bring both back
+lite-mem status        # overall: swap / swappiness / RAM / web panel / samba
 ```
+
+The Samba/SMB share (`/system/bin/smbd`) is the one toggled in the ZTE web UI;
+`lite-mem samba off` flips its `persist.sys.samba.enable` prop and kills the
+running daemon (closes the :139/:445 ports too).
 
 **Verified safe:** the hotspot (`com.zte.host`) and cellular (RIL) are
 independent — they keep working with the web panel off.

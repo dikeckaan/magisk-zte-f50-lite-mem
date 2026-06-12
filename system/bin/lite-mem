@@ -12,6 +12,7 @@
 
 DATADIR=/data/lite-mem
 WEBUI_FLAG="$DATADIR/webui_off"
+SAMBA_FLAG="$DATADIR/samba_off"
 WEB_PKG=com.zte.web
 mkdir -p "$DATADIR" 2>/dev/null
 
@@ -37,7 +38,44 @@ webui_on() {
     echo "[OK] Web panel re-enabled — 192.168.0.1 + goform back in a few seconds."
 }
 
+# ── ZTE samba (SMB file share, /system/bin/smbd on :139/:445) ──────────────
+# The web UI's Samba toggle is the prop persist.sys.samba.enable.
+samba_is_off() { [ "$(getprop persist.sys.samba.enable 2>/dev/null)" = "0" ]; }
+
+samba_off() {
+    setprop persist.sys.samba.enable 0
+    setprop ctl.stop samba 2>/dev/null
+    pkill -9 smbd 2>/dev/null; pkill -9 nmbd 2>/dev/null
+    touch "$SAMBA_FLAG"
+    echo "[OK] Samba (smbd :139/:445) stopped + disabled at boot. Frees RAM + closes the SMB ports."
+}
+
+samba_on() {
+    rm -f "$SAMBA_FLAG"
+    setprop persist.sys.samba.enable 1
+    setprop ctl.start samba 2>/dev/null
+    echo "[OK] Samba re-enabled. If smbd doesn't come up, toggle it in the web UI or reboot."
+}
+
 case "$1" in
+    samba)
+        case "$2" in
+            off|disable|stop) samba_off ;;
+            on|enable|start)  samba_on ;;
+            ""|status) if samba_is_off; then echo "samba: OFF"; else echo "samba: ON ($(pidof smbd >/dev/null 2>&1 && echo running || echo idle))"; fi ;;
+            *) echo "Usage: lite-mem samba {off|on|status}" ;;
+        esac
+        ;;
+    saver)
+        # one-shot aggressive RAM-saving mode: web panel + samba off (or on)
+        case "$2" in
+            on|off)
+                webui_${2}; samba_${2}
+                echo "[OK] RAM-saving mode: $2 (web panel + samba)."
+                ;;
+            *) echo "Usage: lite-mem saver {on|off}" ;;
+        esac
+        ;;
     webui)
         case "$2" in
             off|disable|kill) webui_off ;;
@@ -57,8 +95,9 @@ case "$1" in
         dn=$(pm list packages -d 2>/dev/null | wc -l | tr -d ' ')
         echo "  disabled pkgs: $dn (incl. bloat.list)"
         if webui_is_off; then echo "  web panel    : OFF (RAM-saving)"; else echo "  web panel    : ON"; fi
+        if samba_is_off; then echo "  samba (SMB)  : OFF"; else echo "  samba (SMB)  : ON"; fi
         ;;
     *)
-        echo "Usage: lite-mem {status | webui {off|on|status}}"
+        echo "Usage: lite-mem {status | webui {off|on} | samba {off|on} | saver {on|off}}"
         ;;
 esac

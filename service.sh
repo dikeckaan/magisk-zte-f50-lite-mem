@@ -90,8 +90,18 @@ webui_reassert() {
     log "web panel re-asserted OFF"
 }
 
+# Samba: prop persist.sys.samba.enable=0 already blocks boot start, but kill
+# any smbd that slipped through if the user toggled it off.
+samba_reassert() {
+    [ -f "$DATADIR/samba_off" ] || return
+    setprop persist.sys.samba.enable 0 2>/dev/null
+    pkill -9 smbd 2>/dev/null; pkill -9 nmbd 2>/dev/null
+    log "samba re-asserted OFF"
+}
+
 add_zram
 tune_vm
 debloat
 webui_reassert
+samba_reassert
 log "lite-mem applied"
