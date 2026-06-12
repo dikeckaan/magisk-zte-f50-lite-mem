@@ -32,8 +32,12 @@ ui_print "  Seeded /data/lite-mem/bloat.list (edit to customize)"
 fi
 
 set_perm "$MODPATH/service.sh" 0 0 0755
+set_perm "$MODPATH/system/bin/lite-mem" 0 0 0755
 
 ui_print " "
 ui_print "  [OK] Installed. Reboot to apply (or run service.sh)."
-ui_print "  Tune size: setprop persist/LITE_MEM_ZRAM_MB; default 512."
+ui_print "  Shell CLI:  lite-mem status"
+ui_print "              lite-mem webui off   (kill ZTE web panel, save ~25MB)"
+ui_print "              lite-mem webui on    (restore it)"
+ui_print "  Tune size:  LITE_MEM_ZRAM_MB (default 512)."
 ui_print " "

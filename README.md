@@ -18,6 +18,25 @@ relaunches.
    aftersale packages (analytics, neopush, zdm, aftersale, flagreset) plus the
    print-recommendation service.
 
+## Kill the ZTE web panel (optional, shell-toggleable)
+
+The ZTE goform web panel (`com.zte.web`, the server behind `192.168.0.1` /
+`:8080`) is a PERSISTENT system app using ~25-30 MB and phoning home to ZTE
+cloud. You can toggle it off to save that RAM:
+
+```
+lite-mem webui off     # pm disable + kill com.zte.web (survives reboot)
+lite-mem webui on      # restore it
+lite-mem webui status
+lite-mem status        # overall: swap / swappiness / RAM / web panel
+```
+
+**Verified safe:** the hotspot (`com.zte.host`) and cellular (RIL) are
+independent — they keep working with the web panel off.
+**Trade-off while off:** no `192.168.0.1` web UI, and statusbot's goform
+features (`/performance`, `/qos`, `/zte_setpw`) are unavailable. SMS / AT /
+`/status` / `/region` / `/ssh` etc. are unaffected.
+
 ## Configure
 
 - `/data/lite-mem/bloat.list` — one package per line (`#` comments). Add/remove

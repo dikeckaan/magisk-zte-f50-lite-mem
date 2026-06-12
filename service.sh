@@ -79,7 +79,19 @@ debloat() {
     done < "$BLOAT_LIST"
 }
 
+# ─── 4) re-assert web-panel kill if the user toggled it off ───────────────
+# `pm disable` already persists across reboot, but com.zte.web is PERSISTENT
+# and may respawn early; re-assert + kill the zombie to be safe.
+webui_reassert() {
+    [ -f "$DATADIR/webui_off" ] || return
+    pm disable com.zte.web >/dev/null 2>&1
+    p=$(pidof com.zte.web 2>/dev/null)
+    [ -n "$p" ] && kill -9 $p 2>/dev/null
+    log "web panel re-asserted OFF"
+}
+
 add_zram
 tune_vm
 debloat
+webui_reassert
 log "lite-mem applied"

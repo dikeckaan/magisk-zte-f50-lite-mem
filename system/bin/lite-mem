@@ -1,0 +1,64 @@
+#!/system/bin/sh
+# lite-mem CLI — toggle memory-saving features from the shell.
+#
+#   lite-mem status            overall state (zram, swappiness, debloat, web UI)
+#   lite-mem webui off         kill the ZTE goform web panel (com.zte.web)
+#   lite-mem webui on          restore it
+#   lite-mem webui status      web-panel state only
+#
+# Killing the web panel frees ~25-30 MB and stops its ZTE-cloud telemetry, but
+# disables the 192.168.0.1 web UI AND statusbot's goform features
+# (/performance, /qos, /zte_setpw). Hotspot + cellular are unaffected.
+
+DATADIR=/data/lite-mem
+WEBUI_FLAG="$DATADIR/webui_off"
+WEB_PKG=com.zte.web
+mkdir -p "$DATADIR" 2>/dev/null
+
+webui_is_off() {
+    # disabled in pm? (survives reboot) — authoritative
+    pm list packages -d 2>/dev/null | grep -q "package:${WEB_PKG}$"
+}
+
+webui_off() {
+    pm disable "$WEB_PKG" >/dev/null 2>&1
+    # pidof matches the exact process name (no self-match like pgrep -f)
+    p=$(pidof "$WEB_PKG" 2>/dev/null)
+    [ -n "$p" ] && kill -9 $p 2>/dev/null
+    touch "$WEBUI_FLAG"
+    echo "[OK] Web panel ($WEB_PKG) disabled — ~25-30 MB freed, telemetry stopped."
+    echo "     Gone: 192.168.0.1 web UI, and bot /performance /qos /zte_setpw."
+    echo "     Restore: lite-mem webui on"
+}
+
+webui_on() {
+    rm -f "$WEBUI_FLAG"
+    pm enable "$WEB_PKG" >/dev/null 2>&1
+    echo "[OK] Web panel re-enabled — 192.168.0.1 + goform back in a few seconds."
+}
+
+case "$1" in
+    webui)
+        case "$2" in
+            off|disable|kill) webui_off ;;
+            on|enable|restore) webui_on ;;
+            ""|status)
+                if webui_is_off; then echo "web panel: OFF (disabled)"; else echo "web panel: ON"; fi
+                ;;
+            *) echo "Usage: lite-mem webui {off|on|status}" ;;
+        esac
+        ;;
+    ""|status)
+        echo "lite-mem status"
+        z=$(grep -c 'zram' /proc/swaps 2>/dev/null)
+        echo "  swap devices : $z   (free: $(free -m 2>/dev/null | awk '/Swap/{print $4" MB"}'))"
+        echo "  swappiness   : $(cat /proc/sys/vm/swappiness 2>/dev/null)"
+        echo "  RAM free     : $(free -m 2>/dev/null | awk '/Mem/{print $4" MB / "$2" MB"}')"
+        dn=$(pm list packages -d 2>/dev/null | wc -l | tr -d ' ')
+        echo "  disabled pkgs: $dn (incl. bloat.list)"
+        if webui_is_off; then echo "  web panel    : OFF (RAM-saving)"; else echo "  web panel    : ON"; fi
+        ;;
+    *)
+        echo "Usage: lite-mem {status | webui {off|on|status}}"
+        ;;
+esac
