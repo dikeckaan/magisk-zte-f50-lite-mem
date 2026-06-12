@@ -1,0 +1,7 @@
+id=lite-mem
+name=Lite Mem (zram + debloat)
+version=v1.0.0
+versionCode=1
+author=kaandikec
+description=Memory relief for the low-RAM ZTE F50 (~1.4GB). Adds an extra zstd-compressed zram swap device, raises vm.swappiness/vfs_cache_pressure, and disables a configurable list of background bloat (ZTE analytics/neopush/zdm/aftersale/flagreset, print recommendation). Frees real RAM so heavy apps (V2rayTun, AdGuard) stop getting LMK-killed. Fully reversible (swapoff + re-enable on uninstall). Edit /data/lite-mem/bloat.list to customize.
+updateJson=https://raw.githubusercontent.com/dikeckaan/magisk-zte-f50-lite-mem/main/update.json
